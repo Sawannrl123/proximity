@@ -1,38 +1,99 @@
-.App {
+.app {
+  min-height: 100vh;
+  background-color: slategrey;
+  padding-bottom: 20px;
+}
+
+.indicator {
+  display: flex;
+  list-style: none;
+  align-items: center;
+  padding: 0;
+  color: #fff;
+  margin: 20px 0 50px;
+  justify-content: center;
+}
+
+.indicator li {
+  margin: 0 20px;
+}
+
+.indicator li span {
+  display: inline-block;
+  vertical-align: middle;
+}
+
+.indicator li span:first-child {
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  margin-right: 7px;
+}
+
+.apiTable {
+  border: 1px solid #ddd;
+  background-color: #333;
+  color: #fff;
+  width: 100%;
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.apiTable tr td {
+  padding: 10px;
+  text-align: center;
+  border-bottom: 1px solid #fff;
+  min-width: 150px;
+}
+
+.apiTable tr td:not(:last-child) {
+  border-right: 1px solid #fff;
+} 
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  box-shadow: 0 0 5px rgba(0, 0, 0, .5);
+  background-color: seagreen;
+  padding: 1rem 20px;
+}
+
+.header h1 {
+  margin: 0;
+  line-height: 1.5;
+  font-size: 20px;
+  color: #fff;
   text-align: center;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
+.noContent {
+  color: #fff;
+  padding: 1rem;
+  line-height: 1.5;
+  margin: 0;
+  font-size: 18px;
+  text-align: center;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
+@media only screen and (max-width: 768px) {
+
+  main {
+    padding: 0 20px;
   }
-}
 
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
+  .header h1 {
+    text-align: left;
   }
-  to {
-    transform: rotate(360deg);
+
+  .indicator {
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin: 20px 0;
+  }
+
+  .indicator li {
+    margin: 0 0 10px 0;
   }
 }
