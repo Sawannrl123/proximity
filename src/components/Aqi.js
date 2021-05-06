@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { buildAqiColor } from '../utils';
+import { buildAqiColor, timeAgo } from '../utils';
 
 const Aqi = () => {
   const [airAqiData, setAirAqiData] = useState(null);
@@ -7,7 +7,7 @@ const Aqi = () => {
   useEffect(() => {
     (() => {
       let timeout = 250;
-      const ws = new WebSocket("ws://city-ws.herokuapp.com/‌");
+      const ws = new WebSocket("wss://city-ws.herokuapp.com/‌");
       let connectInterval;
 
       // websocket onopen event listener
@@ -22,7 +22,7 @@ const Aqi = () => {
         let data = JSON.parse(e.data);
         if (data && Array.isArray(data)) {
           const newData = data.reduce((initial, current) => {
-            current.timestamp = Date.now();
+            current.timestamp = new Date();
             initial[current.city] = current;
             return initial;
           }, {});
@@ -86,7 +86,7 @@ const Aqi = () => {
             <tr key={city} style={{backgroundColor: buildAqiColor(cityData.aqi)}}>
               <td>{cityData.city}</td>
               <td>{cityData.aqi.toFixed(2)}</td>
-              <td>{new Date(cityData.timestamp).toLocaleString()}</td>
+              <td>{timeAgo(cityData.timestamp)}</td>
             </tr>
           )
         })}
