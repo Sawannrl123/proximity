@@ -1,70 +1,72 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { AqiChart } from "../components";
 import { buildAqiColor, timeAgo } from "../utils";
 
 const Aqi = () => {
   const [airAqiData, setAirAqiData] = useState(null);
+  const [webSocket, setWs] = useState(null);
 
-  useEffect(() => {
-    (() => {
-      let timeout = 250;
-      const ws = new WebSocket("wss://city-ws.herokuapp.com/‌");
-      let connectInterval;
+  const connect = useCallback(() => {
+    let timeout = 250;
+    const ws = new WebSocket("wss://city-ws.herokuapp.com/‌");
+    let connectInterval;
 
-      // websocket onopen event listener
-      ws.onopen = () => {
-        console.log("connected websocket app component");
+    // websocket onopen event listener
+    ws.onopen = () => {
+      console.log("connected websocket app component");
+      setWs(ws);
+      timeout = 250; // reset timer to 250 on open of websocket connection
+      clearTimeout(connectInterval); // clear Interval on on open of websocket connection
+    };
 
-        timeout = 250; // reset timer to 250 on open of websocket connection
-        clearTimeout(connectInterval); // clear Interval on on open of websocket connection
-      };
+    ws.onmessage = (e) => {
+      let data = JSON.parse(e.data);
+      if (data && Array.isArray(data)) {
+        const newData = data.reduce((initial, current) => {
+          current.timestamp = new Date();
+          initial[current.city] = current;
+          return initial;
+        }, {});
+        setAirAqiData((a) => (a ? { ...a, ...newData } : newData));
+      }
+    };
 
-      ws.onmessage = (e) => {
-        let data = JSON.parse(e.data);
-        if (data && Array.isArray(data)) {
-          const newData = data.reduce((initial, current) => {
-            current.timestamp = new Date();
-            initial[current.city] = current;
-            return initial;
-          }, {});
-          setAirAqiData((a) => (a ? { ...a, ...newData } : newData));
-        }
-      };
+    // websocket onclose event listener
+    ws.onclose = (e) => {
+      console.log(
+        `Socket is closed. Reconnect will be attempted in ${Math.min(
+          10000 / 1000,
+          (timeout + timeout) / 1000
+        )} second.`,
+        e.reason
+      );
 
-      // websocket onclose event listener
-      ws.onclose = (e) => {
-        console.log(
-          `Socket is closed. Reconnect will be attempted in ${Math.min(
-            10000 / 1000,
-            (timeout + timeout) / 1000
-          )} second.`,
-          e.reason
-        );
+      timeout = timeout + timeout; //increment retry interval
+      connectInterval = setTimeout(check, Math.min(10000, timeout)); //call check function after timeout
+    };
 
-        timeout = timeout + timeout; //increment retry interval
-        connectInterval = setTimeout(check, Math.min(10000, timeout)); //call check function after timeout
-      };
+    // websocket onerror event listener
+    ws.onerror = (err) => {
+      console.error(
+        "Socket encountered error: ",
+        err.message,
+        "Closing socket"
+      );
 
-      // websocket onerror event listener
-      ws.onerror = (err) => {
-        console.error(
-          "Socket encountered error: ",
-          err.message,
-          "Closing socket"
-        );
-
-        ws.close();
-      };
-    })();
-  }, []);
+      ws.close();
+    };
+  }, []); // eslint-disable-line
 
   /**
    * utilited by the @function connect to check if the connection is close, if so attempts to reconnect
    */
-  const check = () => {
-    const { ws } = this.state;
-    if (!ws || ws.readyState === WebSocket.CLOSED) this.connect(); //check if websocket instance is closed, if so call `connect` function.
-  };
+  const check = useCallback(() => {
+    if (!webSocket || webSocket.readyState === WebSocket.CLOSED) connect(); //check if websocket instance is closed, if so call `connect` function.
+  }, [connect, webSocket]);
+
+  useEffect(() => {
+    connect();
+  }, [connect]);
 
   const renderChildren = () => {
     if (airAqiData === null) return <p className="noContent">Loading...</p>;
