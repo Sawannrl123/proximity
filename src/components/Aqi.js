@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { buildAqiColor, timeAgo } from '../utils';
+import { AqiChart } from "../components";
+import { buildAqiColor, timeAgo } from "../utils";
 
 const Aqi = () => {
   const [airAqiData, setAirAqiData] = useState(null);
@@ -26,9 +27,9 @@ const Aqi = () => {
             initial[current.city] = current;
             return initial;
           }, {});
-          setAirAqiData(a => (a ? {...a, ...newData} : newData));
+          setAirAqiData((a) => (a ? { ...a, ...newData } : newData));
         }
-      }
+      };
 
       // websocket onclose event listener
       ws.onclose = (e) => {
@@ -66,36 +67,45 @@ const Aqi = () => {
   };
 
   const renderChildren = () => {
-    if (airAqiData === null) return <p className="noContent">Loading...</p>
+    if (airAqiData === null) return <p className="noContent">Loading...</p>;
     const cities = Object.keys(airAqiData);
-    if (cities.length === 0)
-      return <p className="noContent">No Data Found.</p>
+    if (cities.length === 0) return <p className="noContent">No Data Found.</p>;
     return (
-      <table cellPadding="0" cellSpacing="0" border="0" className="apiTable">
-        <thead>
-          <tr>
-            <td>City</td>
-            <td>Current AQI</td>
-            <td>Last Updated</td>
-          </tr>
-        </thead>
-        <tbody>
-        {cities.map(city => {
-          const cityData = airAqiData[city];
-          return (
-            <tr key={city} style={{backgroundColor: buildAqiColor(cityData.aqi)}}>
-              <td>{cityData.city}</td>
-              <td>{cityData.aqi.toFixed(2)}</td>
-              <td>{timeAgo(cityData.timestamp)}</td>
+      <div className="tableWrapper">
+        <table cellPadding="0" cellSpacing="0" border="0" className="apiTable">
+          <thead>
+            <tr>
+              <td>City</td>
+              <td>Current AQI</td>
+              <td>Last Updated</td>
             </tr>
-          )
-        })}
-        </tbody>
-      </table>
-    )
-  }
+          </thead>
+          <tbody>
+            {cities.map((city) => {
+              const cityData = airAqiData[city];
+              return (
+                <tr
+                  key={city}
+                  style={{ backgroundColor: buildAqiColor(cityData.aqi) }}
+                >
+                  <td>{cityData.city}</td>
+                  <td>{cityData.aqi.toFixed(2)}</td>
+                  <td>{timeAgo(cityData.timestamp)}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+    );
+  };
 
-  return renderChildren();
+  return (
+    <div className="chartContainer">
+      {renderChildren()}
+      {airAqiData && <AqiChart aqiData={airAqiData} />}
+    </div>
+  );
 };
 
 export default Aqi;

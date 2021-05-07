@@ -1,3 +1,7 @@
+main {
+  padding: 0 20px;
+}
+
 .app {
   min-height: 100vh;
   background-color: slategrey;
@@ -35,8 +39,6 @@
   background-color: #333;
   color: #fff;
   width: 100%;
-  max-width: 600px;
-  margin: 0 auto;
 }
 
 .apiTable tr td {
@@ -76,11 +78,43 @@
   text-align: center;
 }
 
-@media only screen and (max-width: 768px) {
+.chartContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
 
-  main {
-    padding: 0 20px;
-  }
+.chartWrapper {
+  flex: 1 1 auto;
+  height: 500px;
+  margin-top: 20px;
+}
+
+.custom-tooltip {
+  padding: 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, .2);
+  color: #fff;
+}
+
+.custom-tooltip p {
+  margin: 0;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.custom-tooltip h3 {
+  margin: 0;
+  line-height: 1.5;
+}
+
+.tableWrapper {
+  max-width: 100%;
+  overflow: auto;
+  flex: 1 1 600px;
+}
+
+@media only screen and (max-width: 768px) {
 
   .header h1 {
     text-align: left;
